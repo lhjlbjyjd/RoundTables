@@ -60,7 +60,7 @@ public:
                 for (int i = 1; i < edges.size(); i++) {
                     if(edges[i].state != 1) {
                         double dist = getDistance(edges[j], edges[i]);
-                        if (dist >= 0 && dist <= d && !(edges[j].isWall && edges[i].isWall)) {
+                        if (dist <= d && !(edges[j].isWall && edges[i].isWall)) {
                             newWave.emplace_back(i);
                         }
                     }
