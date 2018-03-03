@@ -25,7 +25,7 @@ private:
     double getDistance(Edge& e1, Edge& e2){
         long long lx = ((long long)e2.x - (long long)e1.x)*((long long)e2.x - (long long)e1.x);
         long long ly = (e1.isWall || e2.isWall) ? 0 : ((long long)e2.y - (long long)e1.y)*((long long)e2.y - (long long)e1.y);
-        double penalty = (e2.isWall || e1.isWall) ?  (((e1.isWall && !e2.isWall) || (!e1.isWall && e2.isWall)) ? radius : 0) : radius*2;
+        int penalty = (e2.isWall || e1.isWall) ?  (((e1.isWall && !e2.isWall) || (!e1.isWall && e2.isWall)) ? radius : 0) : radius*2;
         return sqrt(lx + ly) - penalty;
     }
 
@@ -74,22 +74,24 @@ public:
         }
         return false;
     }
+
+    unsigned int size(){
+        return edges.size();
+    }
 };
 
 double binSearch(MyGraph &g, double maxRad){
     if(g.solve(0)) return 0;
     double left = 0, right = maxRad, mid = 0;
-    while (left < right) {
-        double tmp = left + (right - left) / 2;
-        if(round(tmp*1000)/1000 == round(mid*1000)/1000)
-            return round(tmp*1000)/1000;
-        mid = tmp;
+    while (right - left > 0.000000001) {
+        mid = left + (right - left) / 2;
 
         if (!g.solve(mid))
             left = mid;
         else
             right = mid;
     }
+    return left;
 }
 
 int main() {
@@ -102,10 +104,12 @@ int main() {
     for(int i = 0; i < n; i++){
         int tmpA, tmpB;
         cin >> tmpA >> tmpB;
-        graph.addEdge(tmpA, tmpB, false);
+        if(tmpA > xl - r && tmpB < xr + r)
+            graph.addEdge(tmpA, tmpB, false);
     }
     graph.addEdge(xr, 0, true);
     cout.precision(3);
-    cout << fixed<< binSearch(graph, xr - xl);
+    double alternativeAnswer = xr - xl;
+    cout << fixed << ((graph.size() > 2) ? binSearch(graph, xr - xl) : alternativeAnswer);
     return 0;
 }
